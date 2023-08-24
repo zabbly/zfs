@@ -27,12 +27,6 @@ NJOBS    = -j$(or $(PARALLEL),$(NUM_CPUS),1)
 %:
 	dh $@ --with autoreconf,dkms,python3,sphinxdoc
 
-override_dh_autoreconf:
-	@# Embed the downstream version in the module.
-	@sed -e 's/^Version:.*/Version:       $(DEB_VERSION_UPSTREAM)/' -i.orig META
-
-	dh_autoreconf
-
 override_dh_auto_configure:
 	@# Build the userland, but don't build the kernel modules.
 	dh_auto_configure -- @CFGOPTS@ \
@@ -71,6 +65,7 @@ override_dh_auto_build:
 	@# This creates the $(CURDIR)/$(NAME)-$(DEB_VERSION_UPSTREAM)/ tree, which does not
 	@# contain the userland sources. NB: Remove-userland-dist-rules.patch
 	$(MAKE) distdir
+	mv zfs-*/ $(NAME)-$(DEB_VERSION_UPSTREAM)
 
 	dh_auto_build
 

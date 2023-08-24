@@ -1,7 +1,7 @@
 Source: openzfs-linux
 Section: contrib/kernel
 Priority: optional
-Maintainer: ZFS on Linux specific mailing list <zfs-discuss@list.zfsonlinux.org>
+Maintainer: Zabbly ZFS builds <info@zabbly.com>
 Build-Depends: debhelper-compat (= 12),
                dh-python,
                dh-sequence-dkms | dkms (>> 2.1.1.2-5),
@@ -35,6 +35,7 @@ Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Breaks: libnvpair1, libnvpair3
 Replaces: libnvpair1, libnvpair3, libnvpair3linux
+Provides: libnvpair3linux
 Conflicts: libnvpair3linux
 Description: Solaris name-value library for Linux
  This library provides routines for packing and unpacking nv pairs for
@@ -45,6 +46,7 @@ Package: openzfs-libpam-zfs
 Section: contrib/admin
 Architecture: linux-any
 Depends: libpam-runtime, ${misc:Depends}, ${shlibs:Depends}
+Provides: libpam-zfs
 Replaces: libpam-zfs
 Conflicts: libpam-zfs
 Description: PAM module for managing encryption keys for ZFS
@@ -60,6 +62,7 @@ Section: contrib/libs
 Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Breaks: libuutil1, libuutil3
+Provides: libuutil3linux
 Replaces: libuutil1, libuutil3, libuutil3linux
 Conflicts: libuutil3linux
 Description: Solaris userland utility library for Linux
@@ -85,7 +88,7 @@ Depends: libssl-dev | libssl1.0-dev,
          ${misc:Depends}
 Replaces: libzfslinux-dev
 Conflicts: libzfslinux-dev
-Provides: libnvpair-dev, libuutil-dev
+Provides: libnvpair-dev, libuutil-dev, libzfslinux-dev
 Description: OpenZFS filesystem development files for Linux
  Header files and static libraries for compiling software against
  libraries of OpenZFS filesystem.
@@ -101,6 +104,7 @@ Depends: ${misc:Depends}, ${shlibs:Depends}
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=988521
 Recommends: libcurl4
 Breaks: libzfs2, libzfs4, libzfs4linux, libzfs6linux, openzfs-libzfs4
+Provides: libzfs6linux
 Replaces: libzfs2, libzfs4, libzfs4linux, libzfs6linux, openzfs-libzfs4
 Conflicts: libzfs6linux
 Description: OpenZFS filesystem library for Linux - general support
@@ -115,6 +119,7 @@ Section: contrib/libs
 Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Breaks: libzfs2, libzfs4
+Provides: libzfsbootenv1linux
 Replaces: libzfs2, libzfs4, libzfsbootenv1linux
 Conflicts: libzfsbootenv1linux
 Description: OpenZFS filesystem library for Linux - label info support
@@ -128,8 +133,9 @@ Package: openzfs-libzpool6
 Section: contrib/libs
 Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Breaks: libzpool2, libzpool5, libzpool6linux
-Replaces: libzpool2, libzpool5, libzpool6linux
+Breaks: libzpool2, libzpool5, libzpool5linux, libzpool6linux
+Provides: libzpool6linux
+Replaces: libzpool2, libzpool5, libzpool5linux, libzpool6linux
 Conflicts: libzpool6linux
 Description: OpenZFS pool library for Linux
  OpenZFS is a storage platform that encompasses the functionality of
@@ -145,6 +151,7 @@ Depends: python3-cffi,
          openzfs-zfsutils (= ${binary:Version}),
          ${misc:Depends},
          ${python3:Depends}
+Provides: python3-pyzfs
 Replaces: python3-pyzfs
 Conflicts: python3-pyzfs
 Description: wrapper for libzfs_core C library
@@ -163,9 +170,10 @@ Description: wrapper for libzfs_core C library
 
 Package: openzfs-pyzfs-doc
 Section: contrib/doc
-Architecture: all
+Architecture: any
 Depends: ${misc:Depends}, ${sphinxdoc:Depends}
 Recommends: openzfs-python3-pyzfs
+Provides: pyzfs-doc
 Replaces: pyzfs-doc
 Conflicts: pyzfs-doc
 Description: wrapper for libzfs_core C library (documentation)
@@ -185,7 +193,7 @@ Description: wrapper for libzfs_core C library (documentation)
  This package contains the documentation.
 
 Package: openzfs-zfs-dkms
-Architecture: all
+Architecture: any
 Depends: dkms (>> 2.1.1.2-5),
          file,
          libc6-dev | libc-dev,
@@ -198,7 +206,7 @@ Recommends: openzfs-zfs-zed, openzfs-zfsutils (>= ${source:Version}), ${linux:Re
 Suggests: debhelper
 Breaks: spl-dkms (<< 0.8.0~rc1)
 Replaces: spl-dkms, zfs-dkms
-Provides: openzfs-zfs-modules
+Provides: openzfs-zfs-modules, zfs-dkms
 Description: OpenZFS filesystem kernel modules for Linux
  OpenZFS is a storage platform that encompasses the functionality of
  traditional filesystems and volume managers. It supports data checksums,
@@ -208,13 +216,14 @@ Description: OpenZFS filesystem kernel modules for Linux
  OpenZFS.
 
 Package: openzfs-zfs-initramfs
-Architecture: all
+Architecture: any
 Depends: busybox-initramfs | busybox-static | busybox,
          initramfs-tools,
          openzfs-zfs-modules | openzfs-zfs-dkms,
          openzfs-zfsutils (>= ${source:Version}),
          ${misc:Depends}
 Breaks: zfsutils-linux (<= 0.7.11-2)
+Provides: zfs-initramfs
 Replaces: zfsutils-linux (<= 0.7.11-2), zfs-initramfs
 Conflicts: zfs-initramfs
 Description: OpenZFS root filesystem capabilities for Linux - initramfs
@@ -226,12 +235,13 @@ Description: OpenZFS root filesystem capabilities for Linux - initramfs
  for the initramfs-tools infrastructure.
 
 Package: openzfs-zfs-dracut
-Architecture: all
+Architecture: any
 Depends: dracut,
          openzfs-zfs-modules | openzfs-zfs-dkms,
          openzfs-zfsutils (>= ${source:Version}),
          ${misc:Depends}
 Conflicts: zfs-dracut
+Provides: zfs-dracut
 Replaces: zfs-dracut
 Description: OpenZFS root filesystem capabilities for Linux - dracut
  OpenZFS is a storage platform that encompasses the functionality of
@@ -249,10 +259,12 @@ Depends: openzfs-libnvpair3 (= ${binary:Version}),
          openzfs-libuutil3 (= ${binary:Version}),
          openzfs-libzfs6 (= ${binary:Version}),
          openzfs-libzpool6 (= ${binary:Version}),
-         python3,
          ${misc:Depends},
          ${shlibs:Depends}
-Recommends: lsb-base, openzfs-zfs-modules | openzfs-zfs-dkms, openzfs-zfs-zed
+Recommends: lsb-base,
+            openzfs-zfs-modules | openzfs-zfs-dkms,
+            openzfs-zfs-zed,
+            python3
 Breaks: openrc,
         spl (<< 0.7.9-2),
         spl-dkms (<< 0.8.0~rc1),
@@ -263,7 +275,7 @@ Conflicts: zfs, zfs-fuse, zfsutils-linux
 Suggests: nfs-kernel-server,
           samba-common-bin (>= 3.0.23),
           openzfs-zfs-initramfs | openzfs-zfs-dracut
-Provides: openzfsutils
+Provides: openzfsutils, zfsutils-linux
 Description: command-line tools to manage OpenZFS filesystems
  OpenZFS is a storage platform that encompasses the functionality of
  traditional filesystems and volume managers. It supports data checksums,
@@ -281,6 +293,7 @@ Depends: openzfs-zfs-modules | openzfs-zfs-dkms,
          ${misc:Depends},
          ${shlibs:Depends}
 Conflicts: zfs, zfs-zed
+Provides: zfs-zed
 Replaces: zfs-zed
 Description: OpenZFS Event Daemon
  OpenZFS is a storage platform that encompasses the functionality of
@@ -315,6 +328,7 @@ Depends: acl,
          ${shlibs:Depends}
 Recommends: nfs-kernel-server
 Breaks: zfsutils-linux (<= 0.7.9-2)
+Provides: zfs-test
 Replaces: zfsutils-linux (<= 0.7.9-2), zfs-test
 Conflicts: zutils, zfs-test
 Description: OpenZFS test infrastructure and support scripts

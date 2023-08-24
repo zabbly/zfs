@@ -1,8 +1,8 @@
-openzfs-linux (@VERSION@-1) unstable; urgency=low
+openzfs-linux (2.2.0~rc3-amd64-202308241729-ubuntu22.04) jammy; urgency=medium
 
-  * OpenZFS @VERSION@ is tagged.
+  * Automated ZFS build
 
- -- Umer Saleem <usaleem@ixsystems.com>  Wed, 15 Nov 2023 15:00:00 +0500
+ -- Zabbly ZFS builds <info@zabbly.com>  Thu, 24 Aug 2023 13:29:37 -0400
 
 openzfs-linux (2.2.99-1) unstable; urgency=low
 

@@ -1,7 +1,7 @@
 Source: openzfs-linux
 Section: contrib/kernel
 Priority: optional
-Maintainer: ZFS on Linux specific mailing list <zfs-discuss@list.zfsonlinux.org>
+Maintainer: Zabbly ZFS builds <info@zabbly.com>
 Build-Depends: debhelper-compat (= 12),
                dh-python,
                dh-sequence-dkms | dkms (>> 2.1.1.2-5),
@@ -162,7 +162,7 @@ Description: wrapper for libzfs_core C library
 
 Package: openzfs-pyzfs-doc
 Section: contrib/doc
-Architecture: all
+Architecture: any
 Depends: ${misc:Depends}, ${sphinxdoc:Depends}
 Recommends: openzfs-python3-pyzfs
 Replaces: pyzfs-doc
@@ -184,7 +184,7 @@ Description: wrapper for libzfs_core C library (documentation)
  This package contains the documentation.
 
 Package: openzfs-zfs-dkms
-Architecture: all
+Architecture: any
 Depends: dkms (>> 2.1.1.2-5),
          file,
          libc6-dev | libc-dev,
@@ -207,7 +207,7 @@ Description: OpenZFS filesystem kernel modules for Linux
  OpenZFS.
 
 Package: openzfs-zfs-initramfs
-Architecture: all
+Architecture: any
 Depends: busybox-initramfs | busybox-static | busybox,
          initramfs-tools,
          openzfs-zfs-modules | openzfs-zfs-dkms,
@@ -225,7 +225,7 @@ Description: OpenZFS root filesystem capabilities for Linux - initramfs
  for the initramfs-tools infrastructure.
 
 Package: openzfs-zfs-dracut
-Architecture: all
+Architecture: any
 Depends: dracut,
          openzfs-zfs-modules | openzfs-zfs-dkms,
          openzfs-zfsutils (>= ${source:Version}),

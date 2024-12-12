@@ -1,0 +1,102 @@
+name: Builds
+on:
+  - push
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-zfs:
+    name: Build ZFS
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-24.04
+          - debian-11
+          - debian-12
+          - debian-13
+        arch:
+          - amd64
+          - arm64
+        exclude:
+          - os: debian-11
+            arch: arm64
+    runs-on:
+      - self-hosted
+      - cpu-4
+      - mem-4G
+      - arch-${{ matrix.arch }}
+      - image-${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install --yes \
+            debhelper \
+            devscripts \
+            dh-autoreconf \
+            dh-python \
+            dkms \
+            dpkg-dev \
+            libaio-dev \
+            libblkid-dev \
+            libcurl4-openssl-dev \
+            libelf-dev \
+            libpam0g-dev \
+            libssl-dev \
+            libtirpc-dev \
+            libtool \
+            libudev-dev \
+            lsb-release \
+            po-debconf \
+            python3-all-dev \
+            python3-cffi \
+            python3-setuptools \
+            python3-sphinx \
+            uuid-dev \
+            zlib1g-dev
+
+          sudo apt-get install dh-dkms --yes || true
+          sudo apt-get install linux-headers-$(uname -r) --yes || true
+
+      - name: Build ZFS
+        env:
+          PKGOS: ${{ matrix.os }}
+          PKGARCH: ${{ matrix.arch }}
+        run: |
+            [ "${PKGOS}" = "debian-11" ] && CODENAME=bullseye
+            [ "${PKGOS}" = "debian-12" ] && CODENAME=bookworm
+            [ "${PKGOS}" = "debian-13" ] && CODENAME=trixie
+            [ "${PKGOS}" = "ubuntu-22.04" ] && CODENAME=jammy
+            [ "${PKGOS}" = "ubuntu-24.04" ] && CODENAME=noble
+
+            ./autogen.sh
+            ./configure
+
+            ZFSVERSION=$(cat META | grep ^Version: | awk '{print $2}')
+
+            cd contrib
+            dch -D ${CODENAME} -M -b -m "Automated ZFS build" -v ${ZFSVERSION}-${PKGARCH}-$(date -u +%Y%m%d%H%M)-$(echo ${PKGOS} | sed "s/-//g")
+            cd ..
+
+            make native-deb-utils
+
+      - name: Prepare the artifacts
+        run: |
+          mkdir out/
+          mv ../openzfs-* out/
+
+      - name: Upload resulting build
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: ${{ matrix.os }}-${{ matrix.arch }}
+          path: out/*
